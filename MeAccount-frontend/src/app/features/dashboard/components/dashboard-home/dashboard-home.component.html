@@ -1,0 +1,156 @@
+<div class="dashboard-home">
+  @if (isLoading) {
+    <div class="loading-state">
+      <div class="spinner-large"></div>
+      <p>Carregando dados...</p>
+    </div>
+  }
+
+  <div class="welcome-section">
+    <div class="header-content">
+      <h1>Bem-vindo, {{ userName }}!</h1>
+      <p>Visão geral das suas finanças</p>
+    </div>
+    <div class="month-filter">
+      <select aria-label="Selecionar mês" [value]="selectedMonth" (change)="onMonthChange($event)">
+        @for (option of monthOptions; track option.value) {
+          <option [value]="option.value">{{ option.label }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card balance-card">
+      <div class="stat-icon neutral">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/>
+        </svg>
+      </div>
+      <div class="stat-info">
+        <span class="stat-label">Saldo Total</span>
+        <span class="stat-value">{{ saldoTotal | currency:'BRL' }}</span>
+      </div>
+    </div>
+
+    <div class="stat-card income-card">
+      <div class="stat-icon income">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+        </svg>
+      </div>
+      <div class="stat-info">
+        <span class="stat-label">Receitas do Mês</span>
+        <span class="stat-value">{{ receitasMes | currency:'BRL' }}</span>
+      </div>
+    </div>
+
+    <div class="stat-card expense-card">
+      <div class="stat-icon expense">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+        </svg>
+      </div>
+      <div class="stat-info">
+        <span class="stat-label">Gastos do Mês</span>
+        <span class="stat-value">{{ gastosMes | currency:'BRL' }}</span>
+      </div>
+    </div>
+
+    <div class="stat-card projection-card">
+      <div class="stat-icon projection">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+        </svg>
+      </div>
+      <div class="stat-info">
+        <span class="stat-label">Projeção 12 meses</span>
+        <span class="stat-value">{{ (receitasMes - gastosMes) * 12 | currency:'BRL' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <section class="accounts-section">
+    <div class="section-header">
+      <h2>Contas</h2>
+    </div>
+
+    <div class="accounts-list">
+      @for (account of accounts; track account.id) {
+        <div class="account-card">
+          <div class="account-badge">{{ account.name.charAt(0).toUpperCase() }}</div>
+          <div class="account-info">
+            <span class="account-name">{{ account.name }}</span>
+            <span class="account-type">{{ getAccountTypeLabel(account.type) }}</span>
+          </div>
+          <span class="account-balance">{{ account.balance | currency:account.currency }}</span>
+        </div>
+      } @empty {
+        <div class="accounts-empty">Nenhuma conta cadastrada.</div>
+      }
+    </div>
+  </section>
+
+  <section class="recent-section">
+    <div class="section-header">
+      <h2>Atividade Recente</h2>
+    </div>
+
+    @if (ultimasTransacoes.length === 0) {
+      <div class="empty-state">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/>
+          <line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
+        </svg>
+        <p>Nenhuma transação no período selecionado</p>
+        <span>Suas transações aparecerão aqui</span>
+      </div>
+    } @else {
+      <div class="recent-list">
+        @for (transaction of ultimasTransacoes; track transaction.id) {
+          <div
+            class="recent-item"
+            [class.income]="transaction.type === 'Income'"
+            [class.expense]="transaction.type === 'Expense'"
+            [class.transfer]="transaction.type === 'Transfer'"
+          >
+            <div class="recent-icon">
+              @if (transaction.type === 'Income') {
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/>
+                </svg>
+              } @else if (transaction.type === 'Transfer') {
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+                </svg>
+              } @else {
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/>
+                </svg>
+              }
+            </div>
+            <div class="recent-info">
+              <span class="recent-description">{{ transaction.description }}</span>
+              <span class="recent-date">{{ formatDate(transaction.date) }} · {{ transaction.accountName }}</span>
+            </div>
+            <div
+              class="recent-amount"
+              [class.income]="transaction.type === 'Income'"
+              [class.expense]="transaction.type === 'Expense'"
+              [class.transfer]="transaction.type === 'Transfer'"
+            >
+              @if (transaction.type === 'Income') {
+                + {{ transaction.amount | currency:'BRL' }}
+              } @else if (transaction.type === 'Transfer') {
+                ↔ {{ transaction.amount | currency:'BRL' }}
+              } @else {
+                − {{ transaction.amount | currency:'BRL' }}
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </section>
+</div>

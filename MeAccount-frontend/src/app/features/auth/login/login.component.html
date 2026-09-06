@@ -1,0 +1,115 @@
+<div class="auth-layout">
+  <aside class="auth-aside">
+    <a class="brand" routerLink="/login" aria-label="MeAccount - início">
+      <span class="brand-mark" aria-hidden="true">M</span>
+      <span class="brand-name">MeAccount</span>
+    </a>
+
+    <div class="aside-copy">
+      <span class="aside-kicker">Seu livro financeiro</span>
+      <h1>Clareza para cada decisão.</h1>
+      <p>Acompanhe contas, receitas e despesas em um só lugar, com uma visão direta da sua vida financeira.</p>
+      <ul class="aside-points">
+        <li>Saldos consolidados</li>
+        <li>Movimentações organizadas</li>
+        <li>Visão mensal das suas finanças</li>
+      </ul>
+    </div>
+
+    <span class="aside-footer">Controle financeiro pessoal, sem complicação.</span>
+  </aside>
+
+  <main class="auth-main">
+    <section class="access-card" aria-labelledby="login-title">
+      <header class="form-heading">
+        <span class="form-kicker">Acesso seguro</span>
+        <h2 id="login-title">Boas-vindas</h2>
+        <p>Entre para acessar seu painel financeiro.</p>
+      </header>
+
+      @if (errorMessage) {
+        <div class="alert" role="alert">
+          <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
+          </svg>
+          {{ errorMessage }}
+        </div>
+      }
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="access-form">
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            placeholder="seu@email.com"
+            autocomplete="email"
+            formControlName="email"
+            [class.error]="email?.invalid && email?.touched"
+            [class.valid]="email?.valid && email?.touched"
+            [attr.aria-invalid]="email?.invalid && email?.touched"
+            [attr.aria-describedby]="email?.invalid && email?.touched ? 'login-email-error' : null"
+          />
+          @if (email?.invalid && email?.touched) {
+            <div class="form-error" id="login-email-error">
+              @if (email?.errors?.['required']) {
+                Email é obrigatório.
+              } @else if (email?.errors?.['email']) {
+                Email inválido.
+              }
+            </div>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="password">Senha</label>
+          <div class="password-wrapper">
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              id="password"
+              placeholder="Sua senha"
+              autocomplete="current-password"
+              formControlName="password"
+              [class.error]="password?.invalid && password?.touched"
+              [attr.aria-invalid]="password?.invalid && password?.touched"
+              [attr.aria-describedby]="password?.invalid && password?.touched ? 'login-password-error' : null"
+            />
+            <button
+              type="button"
+              class="password-toggle"
+              (click)="showPassword = !showPassword"
+              [attr.aria-label]="showPassword ? 'Ocultar senha' : 'Mostrar senha'"
+              [attr.aria-pressed]="showPassword">
+              @if (showPassword) {
+                <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                </svg>
+              } @else {
+                <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>
+                </svg>
+              }
+            </button>
+          </div>
+          @if (password?.invalid && password?.touched) {
+            <div class="form-error" id="login-password-error">Senha é obrigatória.</div>
+          }
+        </div>
+
+        <button type="submit" class="auth-submit" [disabled]="isLoading">
+          @if (isLoading) {
+            <span class="spinner" aria-hidden="true"></span>
+            Entrando...
+          } @else {
+            <svg aria-hidden="true" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/>
+            </svg>
+            Entrar
+          }
+        </button>
+      </form>
+
+      <p class="auth-switch">Não tem uma conta? <a routerLink="/register">Cadastre-se</a></p>
+    </section>
+  </main>
+</div>

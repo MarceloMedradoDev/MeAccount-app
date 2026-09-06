@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MeAccount — Dashboard · Ledger Editorial (Direção A)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* ===== Direção A — Ledger Editorial (paleta aprovada) ===== */
+  :root {
+    --bg:            #F6F3EE; /* papel creme */
+    --card:          #FFFFFF;
+    --elevated:      #FDFBF7;
+    --primary:       #1E5945; /* verde-floresta */
+    --primary-hover: #16402F;
+    --accent:        #D96C3F; /* terracota */
+    --text:          #1C1917;
+    --text-sec:      #78716C;
+    --success:       #2F7D5B;
+    --error:         #C2442E;
+    --warning:       #B7791F;
+    --income:        #2F7D5B;
+    --expense:       #C2442E;
+    --transfer:      #8A7B5C;
+    --border:        #E8E2D9;
+    --shadow:        0 1px 3px rgba(28,25,23,0.06);
+    --radius:        8px;
+    --serif:         'Fraunces', Georgia, serif;
+    --sans:          'Inter', -apple-system, sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .num { font-variant-numeric: tabular-nums; }
+
+  /* ===== Layout ===== */
+  .dashboard-layout {
+    display: flex;
+    min-height: 100vh;
+    min-width: 320px;
+  }
+
+  /* ===== Sidebar ===== */
+  .sidebar {
+    width: 248px;
+    flex-shrink: 0;
+    background: var(--elevated);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 28px 16px 20px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+  }
+
+  .sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 10px 26px;
+    border-bottom: 1px solid var(--border);
+  }
+  .brand-icon-sm {
+    width: 34px; height: 34px;
+    border-radius: 8px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--accent);
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 19px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .sidebar-brand span {
+    font-family: var(--serif);
+    font-size: 19px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+
+  .sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding-top: 20px;
+    flex: 1;
+  }
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 6px;
+    color: var(--text-sec);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 14px;
+    transition: background .15s ease, color .15s ease;
+  }
+  .nav-item svg { flex-shrink: 0; }
+  .nav-item:hover {
+    background: var(--bg);
+    color: var(--text);
+  }
+  .nav-item.active {
+    background: var(--primary); /* sólido, sem gradiente */
+    color: #FFFFFF;
+  }
+  .nav-item.active:hover { background: var(--primary-hover); }
+
+  .sidebar-footer { border-top: 1px solid var(--border); padding-top: 12px; }
+  .logout-btn {
+    display: flex; align-items: center; gap: 12px;
+    width: 100%;
+    padding: 10px 12px;
+    border: none; border-radius: 6px;
+    background: transparent;
+    color: var(--text-sec);
+    font-family: var(--sans);
+    font-size: 14px; font-weight: 500;
+    cursor: pointer;
+  }
+  .logout-btn:hover { background: var(--bg); color: var(--error); }
+
+  /* ===== Main ===== */
+  .main-content {
+    flex: 1;
+    padding: 44px 48px 64px;
+    max-width: 1080px;
+  }
+
+  /* ===== Header da página ===== */
+  .welcome-section {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-bottom: 36px;
+  }
+  .welcome-section h1 {
+    font-family: var(--serif);
+    font-size: 34px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    line-height: 1.15;
+  }
+  .welcome-section .header-content p {
+    color: var(--text-sec);
+    margin-top: 6px;
+    font-size: 14.5px;
+  }
+  .month-filter select {
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 9px 34px 9px 14px;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2378716C' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+  }
+  .month-filter select:focus {
+    outline: 2px solid var(--primary);
+    outline-offset: 1px;
+  }
+
+  /* ===== Cards de resumo ===== */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 22px 22px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .stat-icon {
+    width: 38px; height: 38px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--bg);
+    border: 1px solid var(--border);
+  }
+  .stat-icon.neutral { color: var(--primary); }
+  .stat-icon.income  { color: var(--income); }
+  .stat-icon.expense { color: var(--expense); }
+  .stat-icon.proj    { color: var(--transfer); }
+  .stat-info { display: flex; flex-direction: column; gap: 4px; }
+  .stat-label {
+    font-size: 12.5px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-sec);
+  }
+  .stat-value {
+    font-family: var(--serif);
+    font-size: 27px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ===== Hairline dupla em headers de seção ===== */
+  .section-header { margin-bottom: 18px; }
+  .section-header h2 {
+    font-family: var(--serif);
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+  .section-header h2::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; bottom: -4px;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ===== Contas ===== */
+  .accounts-section { margin-bottom: 40px; }
+  .accounts-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+  }
+  .account-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .account-badge {
+    width: 40px; height: 40px;
+    border-radius: 8px;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 17px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--primary);
+  }
+  .account-info { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+  .account-name { font-weight: 600; font-size: 14.5px; }
+  .account-type { font-size: 12.5px; color: var(--text-sec); }
+  .account-balance {
+    font-family: var(--serif);
+    font-size: 19px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  /* ===== Atividade Recente ===== */
+  .recent-list {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .recent-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 15px 20px;
+  }
+  .recent-item + .recent-item { border-top: 1px solid var(--border); }
+  .recent-item:hover { background: var(--elevated); }
+  .recent-icon {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--bg);
+    border: 1px solid var(--border);
+  }
+  .recent-item.income   .recent-icon { color: var(--income); }
+  .recent-item.expense  .recent-icon { color: var(--expense); }
+  .recent-item.transfer .recent-icon { color: var(--transfer); }
+  .recent-info { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+  .recent-description { font-weight: 500; font-size: 14.5px; }
+  .recent-date { font-size: 12.5px; color: var(--text-sec); }
+  .recent-amount {
+    font-family: var(--serif);
+    font-size: 16.5px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .recent-amount.income   { color: var(--income); }
+  .recent-amount.expense  { color: var(--expense); }
+  .recent-amount.transfer { color: var(--transfer); }
+
+  /* ===== Responsivo básico ===== */
+  @media (max-width: 900px) {
+    .dashboard-layout { flex-direction: column; }
+    .sidebar {
+      width: 100%;
+      height: auto;
+      position: static;
+      padding: 16px;
+    }
+    .sidebar-brand { padding-bottom: 14px; }
+    .sidebar-nav {
+      flex-direction: row;
+      flex-wrap: wrap;
+      padding-top: 14px;
+    }
+    .sidebar-footer { border-top: none; padding-top: 8px; }
+    .logout-btn { width: auto; }
+    .main-content { padding: 28px 20px 48px; }
+    .welcome-section h1 { font-size: 27px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="dashboard-layout">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon-sm">M</div>
+      <span>MeAccount</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="#" class="nav-item active">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+          <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+        </svg>
+        <span>Dashboard</span>
+      </a>
+      <a href="#" class="nav-item">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/>
+        </svg>
+        <span>Contas</span>
+      </a>
+      <a href="#" class="nav-item">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+          <line x1="7" y1="7" x2="7.01" y2="7"/>
+        </svg>
+        <span>Categorias</span>
+      </a>
+      <a href="#" class="nav-item">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+        </svg>
+        <span>Transações</span>
+      </a>
+      <a href="#" class="nav-item">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+        </svg>
+        <span>Gastos</span>
+      </a>
+      <a href="#" class="nav-item">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+        </svg>
+        <span>Investimentos</span>
+      </a>
+      <a href="#" class="nav-item">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+        </svg>
+        <span>Projeções</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="logout-btn" type="button">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+        <span>Sair</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="dashboard-home">
+
+      <!-- Header da página -->
+      <div class="welcome-section">
+        <div class="header-content">
+          <h1>Bem-vindo, Marcelo!</h1>
+          <p>Visão geral das suas finanças</p>
+        </div>
+        <div class="month-filter">
+          <select aria-label="Selecionar mês">
+            <option selected>Setembro 2026</option>
+            <option>Agosto 2026</option>
+            <option>Julho 2026</option>
+            <option>Junho 2026</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Cards de resumo -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon neutral">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/>
+            </svg>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">Saldo Total</span>
+            <span class="stat-value">R$ 1.289,10</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon income">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+            </svg>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">Receitas do Mês</span>
+            <span class="stat-value">R$ 6.500,00</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon expense">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+            </svg>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">Gastos do Mês</span>
+            <span class="stat-value">R$ 2.381,15</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon proj">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">Projeção 12 meses</span>
+            <span class="stat-value">R$ 49.426,20</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contas -->
+      <div class="accounts-section">
+        <div class="section-header">
+          <h2>Contas</h2>
+        </div>
+        <div class="accounts-list">
+          <div class="account-card">
+            <div class="account-badge">N</div>
+            <div class="account-info">
+              <span class="account-name">Nubank</span>
+              <span class="account-type">Conta Corrente</span>
+            </div>
+            <span class="account-balance">R$ 1.289,10</span>
+          </div>
+          <div class="account-card">
+            <div class="account-badge">I</div>
+            <div class="account-info">
+              <span class="account-name">Itaú</span>
+              <span class="account-type">Conta Corrente</span>
+            </div>
+            <span class="account-balance">R$ 0,00</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Atividade Recente -->
+      <div class="recent-section">
+        <div class="section-header">
+          <h2>Atividade Recente</h2>
+        </div>
+
+        <div class="recent-list">
+          <div class="recent-item income">
+            <div class="recent-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/>
+              </svg>
+            </div>
+            <div class="recent-info">
+              <span class="recent-description">Salário — Empresa XYZ</span>
+              <span class="recent-date">03 set 2026 · Nubank</span>
+            </div>
+            <div class="recent-amount income">+ R$ 6.500,00</div>
+          </div>
+
+          <div class="recent-item expense">
+            <div class="recent-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/>
+              </svg>
+            </div>
+            <div class="recent-info">
+              <span class="recent-description">Aluguel</span>
+              <span class="recent-date">05 set 2026 · Nubank</span>
+            </div>
+            <div class="recent-amount expense">− R$ 1.800,00</div>
+          </div>
+
+          <div class="recent-item expense">
+            <div class="recent-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/>
+              </svg>
+            </div>
+            <div class="recent-info">
+              <span class="recent-description">Supermercado Pão de Açúcar</span>
+              <span class="recent-date">04 set 2026 · Nubank</span>
+            </div>
+            <div class="recent-amount expense">− R$ 342,35</div>
+          </div>
+
+          <div class="recent-item transfer">
+            <div class="recent-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+                <polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+              </svg>
+            </div>
+            <div class="recent-info">
+              <span class="recent-description">Transferência entre contas</span>
+              <span class="recent-date">04 set 2026 · Nubank → Itaú</span>
+            </div>
+            <div class="recent-amount transfer">↔ R$ 500,00</div>
+          </div>
+
+          <div class="recent-item expense">
+            <div class="recent-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/>
+              </svg>
+            </div>
+            <div class="recent-info">
+              <span class="recent-description">Internet Vivo Fibra</span>
+              <span class="recent-date">02 set 2026 · Nubank</span>
+            </div>
+            <div class="recent-amount expense">− R$ 119,90</div>
+          </div>
+
+          <div class="recent-item expense">
+            <div class="recent-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/>
+              </svg>
+            </div>
+            <div class="recent-info">
+              <span class="recent-description">Restaurante — almoço</span>
+              <span class="recent-date">01 set 2026 · Nubank</span>
+            </div>
+            <div class="recent-amount expense">− R$ 86,50</div>
+          </div>
+
+          <div class="recent-item expense">
+            <div class="recent-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/>
+              </svg>
+            </div>
+            <div class="recent-info">
+              <span class="recent-description">Uber — corrida</span>
+              <span class="recent-date">01 set 2026 · Nubank</span>
+            </div>
+            <div class="recent-amount expense">− R$ 32,40</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+</body>
+</html>

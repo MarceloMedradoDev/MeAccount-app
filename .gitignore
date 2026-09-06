@@ -1,0 +1,37 @@
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+*.pfx
+*.p12
+*.pem
+*.key
+secrets.json
+
+# Local data and backups
+*.sql
+*.dump
+*.backup
+
+# Workspace tooling
+.opencode/
+opencode.json
+AGENTS.md
+
+# .NET
+**/bin/
+**/obj/
+*.user
+*.suo
+
+# Node and Angular
+**/node_modules/
+**/dist/
+**/.angular/
+**/coverage/
+
+# Editors and operating systems
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

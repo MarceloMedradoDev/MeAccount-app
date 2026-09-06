@@ -1,0 +1,146 @@
+<div class="auth-layout">
+  <aside class="auth-aside">
+    <a class="brand" routerLink="/login" aria-label="MeAccount - início">
+      <span class="brand-mark" aria-hidden="true">M</span>
+      <span class="brand-name">MeAccount</span>
+    </a>
+
+    <div class="aside-copy">
+      <span class="aside-kicker">Comece com clareza</span>
+      <h1>Sua rotina financeira, organizada.</h1>
+      <p>Crie seu acesso e transforme movimentações dispersas em uma visão simples do que entra, sai e permanece.</p>
+      <ul class="aside-points">
+        <li>Contas reunidas em um painel</li>
+        <li>Categorias adaptadas à sua rotina</li>
+        <li>Histórico financeiro organizado</li>
+      </ul>
+    </div>
+
+    <span class="aside-footer">Seus dados financeiros em um espaço pessoal.</span>
+  </aside>
+
+  <main class="auth-main">
+    <section class="access-card register-card" aria-labelledby="register-title">
+      <header class="form-heading">
+        <span class="form-kicker">Nova conta</span>
+        <h2 id="register-title">Crie seu acesso</h2>
+        <p>Preencha seus dados para começar.</p>
+      </header>
+
+      @if (errorMessage) {
+        <div class="alert" role="alert">
+          <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
+          </svg>
+          {{ errorMessage }}
+        </div>
+      }
+
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="access-form">
+        <div class="form-group">
+          <label for="fullName">Nome completo</label>
+          <input type="text" id="fullName" placeholder="Seu nome completo" autocomplete="name" formControlName="fullName"
+            [class.error]="fullName?.invalid && fullName?.touched" [class.valid]="fullName?.valid && fullName?.touched"
+            [attr.aria-invalid]="fullName?.invalid && fullName?.touched"
+            [attr.aria-describedby]="fullName?.invalid && fullName?.touched ? 'register-name-error' : null" />
+          @if (fullName?.invalid && fullName?.touched) {
+            <div class="form-error" id="register-name-error">
+              @if (fullName?.errors?.['required']) { Nome é obrigatório. }
+              @else if (fullName?.errors?.['minlength']) { Nome deve ter pelo menos 3 caracteres. }
+            </div>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" placeholder="seu@email.com" autocomplete="email" formControlName="email"
+            [class.error]="email?.invalid && email?.touched" [class.valid]="email?.valid && email?.touched"
+            [attr.aria-invalid]="email?.invalid && email?.touched"
+            [attr.aria-describedby]="email?.invalid && email?.touched ? 'register-email-error' : null" />
+          @if (email?.invalid && email?.touched) {
+            <div class="form-error" id="register-email-error">
+              @if (email?.errors?.['required']) { Email é obrigatório. }
+              @else if (email?.errors?.['email']) { Email inválido. }
+            </div>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="password">Senha</label>
+          <div class="password-wrapper">
+            <input [type]="showPassword ? 'text' : 'password'" id="password" placeholder="Crie uma senha" autocomplete="new-password"
+              formControlName="password" [class.error]="password?.invalid && password?.touched" [class.valid]="password?.valid && password?.value"
+              [attr.aria-invalid]="password?.invalid && password?.touched"
+              [attr.aria-describedby]="password?.invalid && password?.touched ? 'register-password-error' : null" />
+            <button type="button" class="password-toggle" (click)="showPassword = !showPassword"
+              [attr.aria-label]="showPassword ? 'Ocultar senha' : 'Mostrar senha'" [attr.aria-pressed]="showPassword">
+              @if (showPassword) {
+                <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              } @else {
+                <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+              }
+            </button>
+          </div>
+          @if (password?.value) {
+            <div
+              class="password-strength"
+              [class.weak]="passwordStrength === 'weak'"
+              [class.medium]="passwordStrength === 'medium'"
+              [class.strong]="passwordStrength === 'strong'"
+              role="progressbar"
+              aria-label="Força da senha"
+              [attr.aria-valuenow]="passwordStrength === 'strong' ? 100 : passwordStrength === 'medium' ? 66 : 33"
+              aria-valuemin="0"
+              aria-valuemax="100">
+            </div>
+          }
+          @if (password?.invalid && password?.touched) {
+            <div class="form-error" id="register-password-error">
+              @if (password?.errors?.['required']) { Senha é obrigatória. }
+              @else if (password?.errors?.['minlength']) { Mínimo de 6 caracteres. }
+            </div>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="confirmPassword">Confirmar senha</label>
+          <div class="password-wrapper">
+            <input [type]="showConfirmPassword ? 'text' : 'password'" id="confirmPassword" placeholder="Confirme sua senha"
+              autocomplete="new-password" formControlName="confirmPassword"
+              [class.error]="(confirmPassword?.invalid && confirmPassword?.touched) || (registerForm.errors?.['passwordMismatch'] && confirmPassword?.touched)"
+              [attr.aria-invalid]="(confirmPassword?.invalid && confirmPassword?.touched) || (registerForm.errors?.['passwordMismatch'] && confirmPassword?.touched)"
+              [attr.aria-describedby]="confirmPassword?.touched && (confirmPassword?.invalid || registerForm.errors?.['passwordMismatch']) ? 'register-confirm-error' : null" />
+            <button type="button" class="password-toggle" (click)="showConfirmPassword = !showConfirmPassword"
+              [attr.aria-label]="showConfirmPassword ? 'Ocultar confirmação de senha' : 'Mostrar confirmação de senha'"
+              [attr.aria-pressed]="showConfirmPassword">
+              @if (showConfirmPassword) {
+                <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              } @else {
+                <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+              }
+            </button>
+          </div>
+          @if (confirmPassword?.invalid && confirmPassword?.touched) {
+            <div class="form-error" id="register-confirm-error">Confirmação de senha é obrigatória.</div>
+          } @else if (registerForm.errors?.['passwordMismatch'] && confirmPassword?.touched) {
+            <div class="form-error" id="register-confirm-error">As senhas não coincidem.</div>
+          }
+        </div>
+
+        <button type="submit" class="auth-submit" [disabled]="isLoading">
+          @if (isLoading) {
+            <span class="spinner" aria-hidden="true"></span>
+            Criando conta...
+          } @else {
+            <svg aria-hidden="true" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/>
+            </svg>
+            Criar conta
+          }
+        </button>
+      </form>
+
+      <p class="auth-switch">Já tem uma conta? <a routerLink="/login">Entrar</a></p>
+    </section>
+  </main>
+</div>
